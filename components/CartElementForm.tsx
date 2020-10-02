@@ -1,14 +1,10 @@
 import React, { useState } from 'react'
 
-import CustomDonationInput from '../components/CustomDonationInput'
-import StripeTestCards from '../components/StripeTestCards'
 import PrintObject from '../components/PrintObject'
-
+import { useShoppingCart } from 'use-shopping-cart'
 import { fetchPostJSON } from '../utils/api-helpers'
-import { formatAmountForDisplay } from '../utils/stripe-helpers'
 import * as config from '../config'
-
-import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
+import { CardElement, useStripe, useElements, Elements } from '@stripe/react-stripe-js'
 
 const CARD_OPTIONS = {
   iconStyle: 'solid' as const,
@@ -34,7 +30,7 @@ const CARD_OPTIONS = {
   },
 }
 
-const ElementsForm = () => {
+const CartElementForm = () => {
   const [input, setInput] = useState({
     customDonation: Math.round(config.MAX_AMOUNT / config.AMOUNT_STEP),
     cardholderName: '',
@@ -43,6 +39,10 @@ const ElementsForm = () => {
   const [errorMessage, setErrorMessage] = useState('')
   const stripe = useStripe()
   const elements = useElements()
+  const {
+    totalPrice,
+    formattedTotalPrice,
+} = useShoppingCart()
 
   const PaymentStatus = ({ status }: { status: string }) => {
     switch (status) {
@@ -82,10 +82,9 @@ const ElementsForm = () => {
     if (!e.currentTarget.reportValidity()) return
     setPayment({ status: 'processing' })
 
-    console.log(input.customDonation)
     // Create a PaymentIntent with the specified amount.
     const response = await fetchPostJSON('/api/payment_intents', {
-      amount: input.customDonation,
+      amount: (totalPrice * 0.01).toFixed(2),
     })
     setPayment(response)
 
@@ -122,17 +121,6 @@ const ElementsForm = () => {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <CustomDonationInput
-          className="elements-style"
-          name="customDonation"
-          value={input.customDonation}
-          min={config.MIN_AMOUNT}
-          max={config.MAX_AMOUNT}
-          step={config.AMOUNT_STEP}
-          currency={config.CURRENCY}
-          onChange={handleInputChange}
-        />
-        <StripeTestCards />
         <fieldset className="elements-style">
           <legend>Your payment details:</legend>
           <input
@@ -163,7 +151,7 @@ const ElementsForm = () => {
             !stripe
           }
         >
-          Donate {formatAmountForDisplay(input.customDonation, config.CURRENCY)}
+          Pay {formattedTotalPrice}
         </button>
       </form>
       <PaymentStatus status={payment.status} />
@@ -172,4 +160,4 @@ const ElementsForm = () => {
   )
 }
 
-export default ElementsForm
+export default CartElementForm

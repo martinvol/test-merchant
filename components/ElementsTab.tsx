@@ -1,7 +1,6 @@
 import ValoraElement from '../components/ValoraElement'
 import { CardElement, Elements } from '@stripe/react-stripe-js'
 import getStripe from '../utils/get-stripejs'
-import { Tabs, Tab } from 'react-bootstrap'
 
 
 const CARD_OPTIONS = {
