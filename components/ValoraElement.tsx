@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import QRCodeElement from './QRCode'
 
 
 type Props = {
@@ -7,6 +8,7 @@ type Props = {
   useValoraDefault: boolean
   accountInputName: string
   phoneInputName: string
+  checkoutAmount: number
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   className?: string
 }
@@ -17,6 +19,7 @@ const ValoraElement = ({
   useValoraDefault,
   accountInputName,
   phoneInputName,
+  checkoutAmount,
   onChange,
   className,
 }: Props) => {
@@ -45,7 +48,7 @@ const ValoraElement = ({
         <input
           type="checkbox"
           name={useValoraInputName} 
-          value={checked}
+          // value={checked}
           checked={checked}
           onChange={handleCheckboxInput}
         />
@@ -64,10 +67,19 @@ const ValoraElement = ({
         <input
           type="text"
           name={accountInputName}
-          placeholder="1x112 asd1 1d23 asd1 1d23 asd1 1d23 "
+          placeholder="0x112 asd1 1d23 asd1 1d23 asd1 1d23 "
           onChange={onChange}
         />
       </div>
+    </fieldset>
+    <fieldset className="elements-style" name={name}>
+      <legend>QR Code for Valora</legend>
+      <QRCodeElement
+        merchantAddress="0xA2C09Ca0a3902ca5e43017159B975c5780cfd4F7"
+        merchantName="Seal Sellers Super Sick Symposium"
+        amount={checkoutAmount}
+        orderID="XKCD"
+      />
     </fieldset>
   </div>
   )

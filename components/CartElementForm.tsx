@@ -33,7 +33,7 @@ const CARD_OPTIONS = {
 }
 
 const CartElementForm = () => {
-  const useValoraDefault = false
+  const useValoraDefault = true
   const [input, setInput] = useState({
     useValora: useValoraDefault,
     cardholderName: '',
@@ -143,6 +143,7 @@ const CartElementForm = () => {
             accountInputName="accountId"
             phoneInputName="phoneNumber"
             onChange={handleInputChange}
+            checkoutAmount={totalPrice}
           />
           <fieldset className="elements-style">
             <legend>Your payment details:</legend>
@@ -152,7 +153,7 @@ const CartElementForm = () => {
                 type="Text"
                 name="cardholderName"
                 onChange={handleInputChange}
-                required
+                // required
             />
             <div className="FormRow elements-style">
               <CardElement
