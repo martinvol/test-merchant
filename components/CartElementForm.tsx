@@ -6,8 +6,7 @@ import { fetchPostJSON } from '../utils/api-helpers'
 import * as config from '../config'
 import { CardElement, useStripe, useElements, Elements } from '@stripe/react-stripe-js'
 import ValoraElement from '../components/ValoraElement'
-// import { CardElement, Elements } from '@stripe/react-stripe-js'
-// import getStripe from '../utils/get-stripejs'
+
 
 const CARD_OPTIONS = {
   iconStyle: 'solid' as const,
@@ -34,13 +33,18 @@ const CARD_OPTIONS = {
 }
 
 const CartElementForm = () => {
+  const useValoraDefault = false
   const [input, setInput] = useState({
+    useValora: useValoraDefault,
     cardholderName: '',
+    accountId: "",
+    phoneNumber: null,
   })
   const [payment, setPayment] = useState({ status: 'initial' })
   const [errorMessage, setErrorMessage] = useState('')
   const stripe = useStripe()
   const elements = useElements()
+
   const {
     totalPrice,
     formattedTotalPrice,
@@ -72,7 +76,7 @@ const CartElementForm = () => {
   }
 
   const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    console.log(input)  
+    console.log(input)
     setInput({
       ...input,
       [e.currentTarget.name]: e.currentTarget.value,
@@ -81,44 +85,50 @@ const CartElementForm = () => {
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     console.log(input)
-    e.preventDefault()
+    // e.preventDefault()
     // Abort if form isn't valid
-    if (!e.currentTarget.reportValidity()) return
-    setPayment({ status: 'processing' })
-
-    // Create a PaymentIntent with the specified amount.
-    const response = await fetchPostJSON('/api/payment_intents', {
-      amount: (totalPrice * 0.01).toFixed(2),
-    })
-    setPayment(response)
-
-    if (response.statusCode === 500) {
-      setPayment({ status: 'error' })
-      setErrorMessage(response.message)
-      return
+  
+    if (input.useValora) {
+      // TODO VALORA THINGS
+      console.log("evtl send API request to Valora endpoint")
     }
-
-    // Get a reference to a mounted CardElement. Elements knows how
-    // to find your CardElement because there can only ever be one of
-    // each type of element.
-    const cardElement = elements!.getElement(CardElement)
-
-    // Use your card Element with other Stripe.js APIs
-    const { error, paymentIntent } = await stripe!.confirmCardPayment(
-      response.client_secret,
-      {
-        payment_method: {
-          card: cardElement!,
-          billing_details: { name: input.cardholderName },
-        },
+    else {
+      if (!e.currentTarget.reportValidity()) return
+      setPayment({ status: 'processing' })
+      // Create a PaymentIntent with the specified amount.
+      const response = await fetchPostJSON('/api/payment_intents', {
+        amount: (totalPrice * 0.01).toFixed(2),
+      })
+      setPayment(response)
+  
+      if (response.statusCode === 500) {
+        setPayment({ status: 'error' })
+        setErrorMessage(response.message)
+        return
       }
-    )
-
-    if (error) {
-      setPayment({ status: 'error' })
-      setErrorMessage(error.message ?? 'An unknown error occured')
-    } else if (paymentIntent) {
-      setPayment(paymentIntent)
+  
+      // Get a reference to a mounted CardElement. Elements knows how
+      // to find your CardElement because there can only ever be one of
+      // each type of element.
+      const cardElement = elements!.getElement(CardElement)
+  
+      // Use your card Element with other Stripe.js APIs
+      const { error, paymentIntent } = await stripe!.confirmCardPayment(
+        response.client_secret,
+        {
+          payment_method: {
+            card: cardElement!,
+            billing_details: { name: input.cardholderName },
+          },
+        }
+      )
+  
+      if (error) {
+        setPayment({ status: 'error' })
+        setErrorMessage(error.message ?? 'An unknown error occured')
+      } else if (paymentIntent) {
+        setPayment(paymentIntent)
+      }
     }
   }
 
@@ -126,7 +136,14 @@ const CartElementForm = () => {
     <>
       <section className="paymentElements">
         <form onSubmit={handleSubmit}>
-          <ValoraElement name="valoraElement" onChange={handleInputChange} />
+          <ValoraElement
+            name="valoraElement"
+            useValoraInputName="useValora"
+            useValoraDefault={useValoraDefault}
+            accountInputName="accountId"
+            phoneInputName="phoneNumber"
+            onChange={handleInputChange}
+          />
           <fieldset className="elements-style">
             <legend>Your payment details:</legend>
             <input
