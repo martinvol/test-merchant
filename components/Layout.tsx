@@ -29,42 +29,14 @@ const Layout = ({
       />
     </Head>
     <div className="container">
-      <header>
-        <div className="header-content">
-          <Link href="/">
-            <a className="logo">
-              <img src="/logo.png" />
-            </a>
-          </Link>
-          <h1>
-            <span className="light">Stripe Sample</span>
-            <br />
-            Next.js, TypeScript, and Stripe 🔒💸
-          </h1>
-        </div>
-      </header>
+      <div className="header-content">
+        <Link href="/">
+          <a className="logo">
+            <img src="/logo.png" />
+          </a>
+        </Link>
+      </div>
       {children}
-    </div>
-    <div className="banner">
-      <span>
-        This is a{' '}
-        <a
-          href="https://github.com/stripe-samples"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Stripe Sample
-        </a>
-        .{' View code on '}
-        <a
-          href="https://github.com/vercel/next.js/tree/canary/examples/with-stripe-typescript"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          GitHub
-        </a>
-        .
-      </span>
     </div>
   </>
 )
