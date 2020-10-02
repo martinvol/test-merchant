@@ -34,33 +34,28 @@ const ElementsTab = () => {
     <section className="paymentElements">
       <ValoraElement />
       <Elements stripe={getStripe()}>
-      <fieldset className="elements-style">
-      <legend>Your payment details:</legend>
-      <input
-          placeholder="Cardholder name"
-          className="elements-style"
-          type="Text"
-          name="cardholderName"
-          // onChange={handleInputChange}
-          required
-      />
-      <div className="FormRow elements-style">
-          <CardElement
-          options={CARD_OPTIONS}
-          />
-      </div>
-      </fieldset>
-      <button
-      className="elements-style-background"
-      type="submit"
-      >
-      Submit Payment
-      </button>
-          {/* <div className="FormRow elements-style">
-          <CardElement
-              options={CARD_OPTIONS}
-          />
-          </div> */}
+        <fieldset className="elements-style">
+        <legend>Your payment details:</legend>
+        <input
+            placeholder="Cardholder name"
+            className="elements-style"
+            type="Text"
+            name="cardholderName"
+            // onChange={handleInputChange}
+            required
+        />
+        <div className="FormRow elements-style">
+            <CardElement
+            options={CARD_OPTIONS}
+            />
+        </div>
+        </fieldset>
+        <button
+        className="elements-style-background"
+        type="submit"
+        >
+        Submit Payment
+        </button>
       </Elements>
     </section>
   )

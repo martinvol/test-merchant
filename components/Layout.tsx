@@ -1,6 +1,5 @@
 import React, { ReactNode } from 'react'
 import Head from 'next/head'
-import Link from 'next/link'
 
 type Props = {
   children: ReactNode
@@ -29,13 +28,6 @@ const Layout = ({
       />
     </Head>
     <div className="container">
-      <div className="header-content">
-        <Link href="/">
-          <a className="logo">
-            <img src="/logo.png" />
-          </a>
-        </Link>
-      </div>
       {children}
     </div>
   </>

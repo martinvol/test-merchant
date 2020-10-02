@@ -4,7 +4,7 @@ import StripeTestCards from '../components/StripeTestCards'
 
 import { useShoppingCart } from 'use-shopping-cart'
 import { fetchPostJSON } from '../utils/api-helpers'
-import { exit } from 'process'
+
 
 const CartSummary = () => {
   const [loading, setLoading] = useState(false)
