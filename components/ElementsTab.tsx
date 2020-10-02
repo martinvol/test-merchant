@@ -31,7 +31,7 @@ const CARD_OPTIONS = {
 const ElementsTab = () => {
   return (
     <section className="paymentElements">
-      <ValoraElement />
+      {/* <ValoraElement name="valoraElement"/> */}
       <Elements stripe={getStripe()}>
         <fieldset className="elements-style">
         <legend>Your payment details:</legend>

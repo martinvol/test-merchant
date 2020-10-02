@@ -1,7 +1,17 @@
 import React, { useState } from 'react'
 
 
-const ValoraElement = () => {
+type Props = {
+  name: string
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  className?: string
+}
+
+const ValoraElement = ({
+  name,
+  onChange,
+  className,
+}: Props) => {
   const [input, setInput] = useState({
     phoneNumber: null,
     accountId: '',
@@ -46,7 +56,7 @@ const ValoraElement = () => {
 
   return (
   <div className="FormRow elements-style">
-    <fieldset className="elements-style">
+    <fieldset className="elements-style" name={name}>
       <legend>Your Valora account details:</legend>
       <div>
         <label>Telephone Number</label>
@@ -54,7 +64,7 @@ const ValoraElement = () => {
           type="tel"
           name="phoneNumber"
           placeholder="(123) 456 - 789"
-          onChange={handleInputChange}
+          onChange={onChange}
         />
       </div>
       <div>
@@ -63,7 +73,7 @@ const ValoraElement = () => {
           type="text"
           name="accountId"
           placeholder="1x112 asd1 1d23 asd1 1d23 asd1 1d23 "
-          onChange={handleInputChange}
+          onChange={onChange}
         />
       </div>
     </fieldset>

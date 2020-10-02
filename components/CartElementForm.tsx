@@ -3,7 +3,6 @@ import React, { useState } from 'react'
 import PrintObject from '../components/PrintObject'
 import { useShoppingCart } from 'use-shopping-cart'
 import { fetchPostJSON } from '../utils/api-helpers'
-import * as config from '../config'
 import { CardElement, useStripe, useElements, Elements } from '@stripe/react-stripe-js'
 import ValoraElement from '../components/ValoraElement'
 // import { CardElement, Elements } from '@stripe/react-stripe-js'
@@ -35,7 +34,6 @@ const CARD_OPTIONS = {
 
 const CartElementForm = () => {
   const [input, setInput] = useState({
-    customDonation: Math.round(config.MAX_AMOUNT / config.AMOUNT_STEP),
     cardholderName: '',
   })
   const [payment, setPayment] = useState({ status: 'initial' })
@@ -67,19 +65,21 @@ const CartElementForm = () => {
             <p className="error-message">{errorMessage}</p>
           </>
         )
-
       default:
         return null
     }
   }
 
-  const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) =>
+  const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    console.log(input)  
     setInput({
       ...input,
       [e.currentTarget.name]: e.currentTarget.value,
     })
+  }
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
+    console.log(input)
     e.preventDefault()
     // Abort if form isn't valid
     if (!e.currentTarget.reportValidity()) return
@@ -123,10 +123,10 @@ const CartElementForm = () => {
 
   return (
     <>
-    <section className="paymentElements">
-      <ValoraElement />
+      <section className="paymentElements">
         <form onSubmit={handleSubmit}>
-            <fieldset className="elements-style">
+          <ValoraElement name="valoraElement" onChange={handleInputChange} />
+          <fieldset className="elements-style">
             <legend>Your payment details:</legend>
             <input
                 placeholder="Cardholder name"
@@ -137,29 +137,29 @@ const CartElementForm = () => {
                 required
             />
             <div className="FormRow elements-style">
-                <CardElement
-                options={CARD_OPTIONS}
-                onChange={(e) => {
-                    if (e.error) {
-                    setPayment({ status: 'error' })
-                    setErrorMessage(e.error.message ?? 'An unknown error occured')
-                    }
-                }}
-                />
+              <CardElement
+              options={CARD_OPTIONS}
+              onChange={(e) => {
+                  if (e.error) {
+                  setPayment({ status: 'error' })
+                  setErrorMessage(e.error.message ?? 'An unknown error occured')
+                  }
+              }}
+              />
             </div>
             </fieldset>
-            <button
+          <button
             className="elements-style-background"
             type="submit"
             disabled={
                 !['initial', 'succeeded', 'error'].includes(payment.status) ||
                 !stripe
             }
-            >
+          >
             Pay {formattedTotalPrice}
-            </button>
+          </button>
         </form>
-        </section>
+      </section>
       <PaymentStatus status={payment.status} />
       <PrintObject content={payment} />
     </>
