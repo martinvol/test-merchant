@@ -13,9 +13,10 @@ import ElementsForm from '../components/ElementsForm'
 
 const IndexPage: NextPage = () => {
   return (
-    <Layout title="Shopping Cart | Next.js + TypeScript Example">
+    <Layout title="Seal-Labs">
     <div className="page-container">
-      <h1>Shopping Cart</h1>
+      <h1>Seal-Labs Store</h1>
+      <h2>Shopping Cart</h2>
       <Cart>
         <Products />
         <CartSummary />
