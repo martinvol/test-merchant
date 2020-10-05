@@ -1,20 +1,18 @@
 import { NextPage } from 'next'
 import Layout from '../components/Layout'
 import Cart from '../components/Cart'
-import Products from '../components/Products'
 import CartSummary from '../components/CartSummary'
-import CartSubmission from '../components/CartSubmission'
+import ValoraCheckout from '../components/ValoraCheckout'
 
 
 const IndexPage: NextPage = () => {
   return (
     <Layout title="Seal-Labs">
     <div className="page-container">
-      <h1>Shopping Cart</h1>
+      <h1>Valora Checkout</h1>
       <Cart>
-        <Products />
         <CartSummary />
-        <CartSubmission />
+        <ValoraCheckout />
       </Cart>
     </div>
   </Layout>
