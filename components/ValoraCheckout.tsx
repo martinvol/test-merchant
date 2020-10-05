@@ -49,22 +49,33 @@ const ValoraCheckout = () => {
             <p className="error-message">{errorMessage}</p>
           </>
         )
-
       default:
         return null
     }
   }
 
   const checkUpdate = () => {
-    console.log("hello i'm polling")
+    // TODO replace this with real logic, submit request to webhook to check state of payment
     const randStatuses : string[] = ['new', 'pending', 'completed', 'expired', 'unresolved']
     const randIndex: number = Math.floor(Math.random() * randStatuses.length)
     setPayment({ status: randStatuses[randIndex] })
   }
 
-  // useInterval(async () => {
-  //   checkUpdate()
-  // }, 1000)
+  useInterval(async () => {
+    if (payment.status != "unsubmitted") {
+      checkUpdate()
+    }
+  }, 1000)
+
+  const handleConfirmPayment: React.FormEventHandler<HTMLFormElement> = async (
+    event
+  ) => {
+    event.preventDefault()
+    setPayment({"status": "new"})
+
+    // TODO submit API POST Charge
+
+  }
 
   return (
     <div className='valora-checkout'>
@@ -77,6 +88,16 @@ const ValoraCheckout = () => {
         orderID="XKCD"
       />
     </fieldset>
+    <form onSubmit={handleConfirmPayment}>
+      <h3>By confirming, you agree to pay the merchant in your Valora wallet.</h3>
+      <button
+        className="cart-style-background"
+        type="submit"
+        disabled={(payment.status != "unsubmitted")}
+      >
+        Confirm Payment
+      </button>
+    </form>
     <PaymentStatus status={payment.status} />
     <PrintObject content={payment} />
     </div>

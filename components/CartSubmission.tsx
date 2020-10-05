@@ -37,7 +37,8 @@ const CartSubmitForm = () => {
   }
 
   return (
-    <form onSubmit={handleCheckout}>
+    // <form onSubmit={handleCheckout}>
+      <form>
       <button
         className="cart-style-background"
         type="button"
@@ -47,8 +48,9 @@ const CartSubmitForm = () => {
       </button>
       <button
         className="cart-style-background"
-        type="submit"
+        type="button"
         disabled={cartEmpty || loading}
+        onClick={handleCheckout}
       >
         Checkout with Stripe
       </button>
