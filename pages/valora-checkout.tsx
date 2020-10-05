@@ -5,7 +5,7 @@ import CartSummary from '../components/CartSummary'
 import ValoraCheckout from '../components/ValoraCheckout'
 
 
-const IndexPage: NextPage = () => {
+const ValoraCheckoutPage: NextPage = () => {
   return (
     <Layout title="Seal-Labs">
     <div className="page-container">
@@ -19,4 +19,4 @@ const IndexPage: NextPage = () => {
   )
 }
 
-export default IndexPage
+export default ValoraCheckoutPage
