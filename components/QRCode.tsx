@@ -29,14 +29,15 @@ const QRCodeElement = ({
   className,
 }: Props) => {
 
+  const link = deepLink(merchantAddress, merchantName, amount, orderID)
   return (
-    <>
-    <QRCode
-      value={deepLink(merchantAddress, merchantName, amount, orderID)}
-      level="M"
-      includeMargin={true}
-    />
-    </>
+    <a href={link}>
+      <QRCode
+        value={link}
+        level="M"
+        includeMargin={true}
+      />
+    </a>
   )
 }
 
