@@ -2,6 +2,9 @@ import React, { useState, useRef, useEffect } from 'react'
 import { useShoppingCart } from 'use-shopping-cart'
 import PrintObject from './PrintObject'
 import QRCodeElement from './QRCode'
+import PacmanLoader from "react-spinners/PacmanLoader";
+import BounceLoader from "react-spinners/BounceLoader";
+
 
 
 export function useInterval(callback: () => void, delay: number) {
@@ -31,14 +34,23 @@ const ValoraCheckout = () => {
     formattedTotalPrice,
   } = useShoppingCart()
 
-  const [payment, setPayment] = useState({ status: 'unsubmitted' })
+  const [payment, setPayment] = useState({ status: 'unsubmitted', orderID:'', qrCOdeRequested:false, address:'', merchantName:"" })
   const [errorMessage, setErrorMessage] = useState('')
   // for now, use our custom API names but possibly keep this all matching to Stripe and within API pings map?
   const PaymentStatus = ({ status }: { status: string }) => {
     switch (status) {
       case 'new':
       case 'pending':
-        return <h2>Processing...</h2>
+        return (<div>
+          <h2>Waiting for payment</h2>
+        
+        <PacmanLoader
+              //css={override}
+              size={50}
+              color={"#123abc"}
+              loading={true}
+            />
+      </div>)
       case 'completed':
         return <h2>Payment Succeeded 🥳</h2>
       case 'expired':
@@ -54,52 +66,99 @@ const ValoraCheckout = () => {
     }
   }
 
-  const checkUpdate = () => {
-    // TODO replace this with real logic, submit request to webhook to check state of payment
-    const randStatuses : string[] = ['new', 'pending', 'completed', 'expired', 'unresolved']
-    const randIndex: number = Math.floor(Math.random() * randStatuses.length)
-    setPayment({ status: randStatuses[randIndex] })
+  const checkUpdate = async () => {
+    
+    console.log(`Checking update for ${payment.orderID}`)
+
+    try {
+      // TODO replace with actual url and response
+      const response = await fetch(`http://google.com?paymentID=${payment.orderID}`, {
+        method: 'GET',
+        headers: {
+          'X-API-KEY': 'vxKPstUZaI7jSWAtqIaNa9y8htGAfAD4547sUXh9',
+          'Content-Type': 'application/json'
+        }
+        });
+      
+      const orderStatus = (await response.json()).status
+      if (orderStatus == 'completed'){
+        setPayment({...payment, "status": "completed"})
+      }
+      
+    } catch(error) {
+      console.log(`Error fetching orderID=${payment.orderID}`)
+    }
+    
   }
 
   useInterval(async () => {
     if (payment.status != "unsubmitted") {
-      checkUpdate()
+      await checkUpdate()
     }
   }, 1000)
-
-  const handleConfirmPayment: React.FormEventHandler<HTMLFormElement> = async (
-    event
-  ) => {
-    event.preventDefault()
-    setPayment({"status": "new"})
-
-    // TODO submit API POST Charge
-
+  
+  
+  if (payment['status'] != 'new' && payment['status'] != 'completed'){
+    setPayment({...payment, "status": "new"})
   }
 
-  return (
-    <div className='valora-checkout'>
-    <fieldset className="elements-style">
+  // fetch QR data
+  if (!payment['qrCOdeRequested']){
+    setPayment({...payment, "qrCOdeRequested":true})
+    console.log("starting payment")
+    console.log("Requesting order")
+    
+    fetch('https://py3txmh6a3.execute-api.eu-central-1.amazonaws.com/dev/charges', {
+        method: 'POST',
+        headers: {
+            'X-API-KEY': 'vxKPstUZaI7jSWAtqIaNa9y8htGAfAD4547sUXh9',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({"id": "2", "merchantId": "2", "total": totalPrice, "createdAt": "2020-10-05T12:44:00.123Z"})
+    }).then(async response =>  {
+      console.log("this is response")
+      console.log(await response.json())
+      await new Promise(r => setTimeout(r, 2000)); // just for a bit of look and feel
+      // replace with actual data
+      setPayment({...payment, "orderID": "XKCD", "qrCOdeRequested":true, "address":'0xA2C09Ca0a3902ca5e43017159B975c5780cfd4F7', "merchantName":"Seal Sellers Super Sick Symposium"})
+    })
+  }
+     
+    
+    
+
+
+  const qrCodeToShow = 
+      <>
+      {payment['status'] != 'completed' &&
+      <fieldset className="elements-style">
       <legend>QR Code for Valora</legend>
       <QRCodeElement
-        merchantAddress="0xA2C09Ca0a3902ca5e43017159B975c5780cfd4F7"
-        merchantName="Seal Sellers Super Sick Symposium"
+        merchantAddress={payment.address}
+        merchantName={payment.merchantName}
         amount={totalPrice}
-        orderID="XKCD"
+        orderID={payment.orderID}
       />
-    </fieldset>
-    <form onSubmit={handleConfirmPayment}>
-      <h3>By confirming, you agree to pay the merchant in your Valora wallet.</h3>
-      <button
-        className="cart-style-background"
-        type="submit"
-        disabled={(payment.status != "unsubmitted")}
-      >
-        Confirm Payment
-      </button>
-    </form>
+      </fieldset>
+    }
     <PaymentStatus status={payment.status} />
-    <PrintObject content={payment} />
+    </>
+  
+  return (
+    <div className='valora-checkout'>
+      { payment['orderID'] ? 
+      qrCodeToShow
+      : 
+      <>
+      <h2>Loading QrCode</h2>
+      <BounceLoader
+        //css={override}
+        size={50}
+        color={"#123abc"}
+        loading={true}
+      />
+      </>
+    }
     </div>
   )
 }
