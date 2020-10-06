@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { useRouter } from 'next/router'
-import PrintObject from './PrintObject'
+import { useShoppingCart } from 'use-shopping-cart'
 import QRCodeElement from './QRCode'
 import PacmanLoader from "react-spinners/PacmanLoader";
 import BounceLoader from "react-spinners/BounceLoader";
@@ -35,9 +34,7 @@ const ValoraCheckout = () => {
     merchantName:""
   })
   const [errorMessage, setErrorMessage] = useState('')
-  const router = useRouter()
-  console.log(router.query)
-  const totalPrice: number = parseInt((router.query.totalPrice! || '').toString())
+  const {totalPrice} = useShoppingCart()
   // for now, use our custom API names but possibly keep this all matching to Stripe and within API pings map?
   const PaymentStatus = ({ status }: { status: string }) => {
     switch (status) {
