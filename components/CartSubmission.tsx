@@ -9,6 +9,7 @@ const CartSubmitForm = () => {
   const [loading, setLoading] = useState(false)
   const [cartEmpty, setCartEmpty] = useState(true)
   const {
+    totalPrice,
     cartCount,
     clearCart,
     cartDetails,
@@ -17,7 +18,7 @@ const CartSubmitForm = () => {
 
   useEffect(() => setCartEmpty(!cartCount), [cartCount])
 
-  const handleCheckout: React.FormEventHandler<HTMLFormElement> = async (
+  const handleCheckout: React.MouseEventHandler<HTMLButtonElement> = async (
     event
   ) => {
     event.preventDefault()
@@ -57,7 +58,8 @@ const CartSubmitForm = () => {
       <button
         className="cart-style-background"
         type="button"
-        onClick={() => Router.push('/valora-checkout')}
+        
+        onClick={() => Router.push({pathname: '/valora-checkout', query: {totalPrice: totalPrice}})}
         disabled={cartEmpty}
       >
         Checkout with Valora
