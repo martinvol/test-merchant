@@ -5,7 +5,6 @@ import PacmanLoader from "react-spinners/PacmanLoader";
 import BounceLoader from "react-spinners/BounceLoader";
 
 
-
 export function useInterval(callback: () => void, delay: number) {
   const savedCallback: {current: (() => void)} = useRef(callback)
   useEffect(() => {
@@ -29,6 +28,7 @@ const ValoraCheckout = () => {
   const CELO_PAY_API_URL = process.env.NEXT_PUBLIC_CELO_PAY_API_URL!
   const CELO_PAY_API_KEY = process.env.NEXT_PUBLIC_CELO_PAY_API_KEY!
   const MERCHANT_ADDRESS = process.env.NEXT_PUBLIC_MERCHANT_ADDRESS!
+  const MERCHANT_NAME = process.env.NEXT_PUBLIC_MERCHANT_NAME!
 
   const [payment, setPayment] = useState({
     status: 'UNSUBMITTED',
@@ -58,6 +58,7 @@ const ValoraCheckout = () => {
         return <h2>Payment Succeeded 🥳</h2>
       case 'EXPIRED':
       case 'UNRESOLVED':
+      case 'ERROR':
         return (
           <>
             <h2>Error 😭</h2>
@@ -69,29 +70,35 @@ const ValoraCheckout = () => {
     }
   }
   const inProgress: string[] = ["NEW", "PENDING"]
-
   const checkUpdate = async () => {
     
     console.log(`Checking update for ${payment.orderID}`)
 
     try {
-      const response = await fetch(
+      const rawResponse = await fetch(
         `${CELO_PAY_API_URL}/charges/${payment.orderID}`, {
         method: 'GET',
         headers: {
           'X-API-KEY': CELO_PAY_API_KEY,
           'Content-Type': 'application/json'
         }
-        });
-      
-      const orderStatus = (await response.json()).status
-      if (!inProgress.includes(orderStatus)) {
-        setPayment({...payment, "status": orderStatus})
+        })
+      const response = await rawResponse.json()
+      if (!inProgress.includes(response.status)) {
+        if (!response.hasOwnProperty('status')) {
+          setPayment({...payment, "status": "ERROR"})
+        }
+        else {
+          setPayment({...payment, "status": response.status})
+          if (response.status != "COMPLETED") {
+            setErrorMessage(`Error fetching orderID=${payment.orderID}: ${response.status}`)
+          }
+        }
       }
+      console.log(response)
     } catch(error) {
       setPayment({...payment, "status": "ERROR"})
       setErrorMessage(`Error fetching orderID=${payment.orderID}`)
-      console.log(error)
     }
   }
 
@@ -116,21 +123,20 @@ const ValoraCheckout = () => {
         body: JSON.stringify({
           "merchantId": "2",
           "total": totalPrice,
-          "createdAt": "2020-10-05T12:44:00.123Z"
+          "createdAt": new Date().toISOString()
         })
     }).then(async rawResponse =>  {
       console.log("QR Code Response")
       const response = await rawResponse.json()
       console.log(response)
       await new Promise(r => setTimeout(r, 2000)); // just for a bit of look and feel
-      // TODO: env var for address; why aren't env vars working?
       setPayment({
         ...payment,
         "orderID": response.id,
         "qrCodeRequested":true,
         "status": 'NEW',
         "address": MERCHANT_ADDRESS,
-        "merchantName":"Seal Sellers Super Sick Symposium"
+        "merchantName": MERCHANT_NAME
       })
     })
   }
@@ -160,7 +166,7 @@ const ValoraCheckout = () => {
       qrCodeToShow
       : 
       <>
-      <h2>Loading QrCode</h2>
+      <h2>Loading QR Code</h2>
       <BounceLoader
         //css={override}
         size={50}
