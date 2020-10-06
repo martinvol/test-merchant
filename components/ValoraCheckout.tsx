@@ -26,6 +26,10 @@ export function useInterval(callback: () => void, delay: number) {
 
 
 const ValoraCheckout = () => {
+  const CELO_PAY_API_URL = process.env.NEXT_PUBLIC_CELO_PAY_API_URL!
+  const CELO_PAY_API_KEY = process.env.NEXT_PUBLIC_CELO_PAY_API_KEY!
+  const MERCHANT_ADDRESS = process.env.NEXT_PUBLIC_MERCHANT_ADDRESS!
+
   const [payment, setPayment] = useState({
     status: 'UNSUBMITTED',
     orderID:'',
@@ -72,10 +76,10 @@ const ValoraCheckout = () => {
 
     try {
       const response = await fetch(
-        `https://py3txmh6a3.execute-api.eu-central-1.amazonaws.com/dev/charges/${payment.orderID}`, {
+        `${CELO_PAY_API_URL}/charges/${payment.orderID}`, {
         method: 'GET',
         headers: {
-          'X-API-KEY': 'vxKPstUZaI7jSWAtqIaNa9y8htGAfAD4547sUXh9',
+          'X-API-KEY': CELO_PAY_API_KEY,
           'Content-Type': 'application/json'
         }
         });
@@ -103,10 +107,10 @@ const ValoraCheckout = () => {
     console.log("starting payment")
     console.log("Requesting order")
     
-    fetch('https://py3txmh6a3.execute-api.eu-central-1.amazonaws.com/dev/charges', {
+    fetch(`${CELO_PAY_API_URL}/charges`, {
         method: 'POST',
         headers: {
-            'X-API-KEY': 'vxKPstUZaI7jSWAtqIaNa9y8htGAfAD4547sUXh9',
+            'X-API-KEY': CELO_PAY_API_KEY,
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -125,7 +129,7 @@ const ValoraCheckout = () => {
         "orderID": response.id,
         "qrCodeRequested":true,
         "status": 'NEW',
-        "address":'0xA2C09Ca0a3902ca5e43017159B975c5780cfd4F7',
+        "address": MERCHANT_ADDRESS,
         "merchantName":"Seal Sellers Super Sick Symposium"
       })
     })
