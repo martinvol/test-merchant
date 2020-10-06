@@ -3,7 +3,7 @@
     "name": "Stuffed Seal",
     "description": "an incredibly fat, flat seal",
     "sku": "price_1HXSKLCMOj2QhXjTplzZMbuo",
-    "price": 100099,
+    "price": 99,
     "image": "/store-pics/stuffed_seal.jpg",
     "attribution": "Photo by Priscilla Du Preez on Unsplash",
     "currency": "USD"
@@ -12,7 +12,7 @@
     "name": "Premium Seal Art",
     "description": "art crafted artfully in the seal-Lab",
     "sku": "price_1HXSPJCMOj2QhXjTphmaq4eT",
-    "price": 2500,
+    "price": 25,
     "image": "/store-pics/seal_art.jpg",
     "currency": "USD"
   }
