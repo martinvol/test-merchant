@@ -121,9 +121,10 @@ const ValoraCheckout = () => {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          "merchantId": "2",
+          "merchantId": "5a816e4d-2330-4dd9-8b80-3b2feaf77c59",
           "total": totalPrice,
-          "createdAt": new Date().toISOString()
+          "createdAt": new Date().toISOString(),
+          "address": MERCHANT_ADDRESS
         })
     }).then(async rawResponse =>  {
       console.log("QR Code Response")
